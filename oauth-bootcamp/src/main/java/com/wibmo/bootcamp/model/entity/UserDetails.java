@@ -7,6 +7,7 @@ import javax.persistence.Id;
 
 @Entity
 public class UserDetails {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int sid;

@@ -3,10 +3,12 @@ package com.wibmo.bootcamp.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.wibmo.bootcamp.dao.UserDetailsDao;
 import com.wibmo.bootcamp.model.entity.UserDetails;
 
+@Service
 public class UserDetailsServiceImplementation implements UserDetailsService {
 
 	@Autowired
@@ -51,12 +53,13 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 
 	@Override
 	public UserDetails getUserByEmail(String email) {
-		UserDetails myUser = userDao.findByEmail(email);
-		if (myUser != null) {
-			return myUser;
-		} else {
-			throw new RuntimeException("User Not found");
-		}
+//		UserDetails myUser = userDao.findByEmail(email);
+//		if (myUser != null) {
+//			return myUser;
+//		} else {
+//			throw new RuntimeException("User Not found");
+//		}
+		return new UserDetails("nitin.sharma", "qwer12345", "Nitin Sharma", 7417457165l, "nitin.sharma@wibmo.com");
 	}
 
 	@Override

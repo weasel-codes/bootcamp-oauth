@@ -7,9 +7,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-	@RequestMapping(path = "/testserver", method = RequestMethod.GET)
-	String testMethod() {
+	@RequestMapping(path = "/auth/testserver", method = RequestMethod.GET)
+	String testAuth() {
 		System.out.println("[TestController] : testMethod()");
 		return "\"resp\" : \"Hello World\"";
 	}
+
+	@RequestMapping(path = "/user/testserver", method = RequestMethod.GET)
+	String testUser() {
+		System.out.println("[TestController] : testUser()");
+		return "\"resp\" : \"Hello World\"";
+	}
+
 }
