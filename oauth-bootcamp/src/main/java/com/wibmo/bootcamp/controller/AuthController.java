@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wibmo.bootcamp.constant.APIEndPoint;
 import com.wibmo.bootcamp.model.entity.UserDetails;
+import com.wibmo.bootcamp.model.req.SignInReq;
 import com.wibmo.bootcamp.model.req.SignUpReq;
 import com.wibmo.bootcamp.model.resp.SignUpRes;
 import com.wibmo.bootcamp.service.UserDetailsServiceImplementation;
@@ -55,9 +56,37 @@ public class AuthController {
 
 		return new ResponseEntity<SignUpRes>(res, HttpStatus.OK);
 	}
+	
+	@RequestMapping(path = APIEndPoint.LOGIN, method = RequestMethod.POST)
+	public ResponseEntity<String> signIn(@RequestBody SignInReq req) {
+
+		if(validateSignInReq(req) == false) {
+			LOGGER.error("Incorrect Request : " + req);
+			return new ResponseEntity<String>("", HttpStatus.BAD_REQUEST);
+		}
+		
+		UserDetails user = userService.getUserByEmail(req.getEmail());
+		try {
+			jwtutils.isExpired(user.getJwt_token());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			LOGGER.info("Generating Token...");
+			String token = jwtutils.generateAccessToken(user);
+			user.setJwt_token(token);
+			userService.updateUser(user);
+		}
+	
+		return new ResponseEntity<String>(user.getJwt_token(), HttpStatus.OK);
+	}	
 
 	private boolean validateSignupReq(SignUpReq req) {
-		if (req.getEmail() == null || req.getPhone() == 0 || req.getPassword() == null || req.getUsername() == null)
+		if (req==null || req.getEmail() == null || req.getPhone() == 0 || req.getPassword() == null || req.getUsername() == null)
+			return false;
+		return true;
+	}
+
+	private boolean validateSignInReq(SignInReq req) {
+		if (req==null || req.getEmail() == null || req.getPassword() == null)
 			return false;
 		return true;
 	}

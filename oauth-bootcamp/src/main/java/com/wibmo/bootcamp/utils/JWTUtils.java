@@ -21,15 +21,21 @@ public class JWTUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JWTUtils.class);
 	private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hour
+//	private static final long EXPIRE_DURATION = 1 * 1000; // 24 hour
 
 	private static final String SECRET_KEY = "12345@abcde";
 
 	public String generateAccessToken(UserDetails user) {
 
-		return Jwts.builder().setSubject(user.getEmail() + "#" + user.getPassword())
-				.setIssuer("NITIN@TUSHAR").setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
+		String token = Jwts.builder().setSubject(user.getEmail() + "#" + user.getPassword()).setIssuer("NITIN@TUSHAR")
+				.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
+
+//		System.out.println(Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject() 
+//				+ " : " + Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getIssuer() 
+//				+ " : " + Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getExpiration());
+
+		return token;
 	}
 
 	public boolean validateAccessToken(String token) {
@@ -60,17 +66,29 @@ public class JWTUtils {
 		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 	}
 
-	public static void main(String[] args) {
+	public boolean isExpired(String token) {
+		if (Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getExpiration().before(new Date()))
+			return true;
+		else
+			return false;
+	}
+
+	public static void main(String[] args) throws InterruptedException {
 		JWTUtils utils = new JWTUtils();
 		System.out.println(SECRET_KEY);
 
-		UserDetails details = new UserDetails("nitin.sharma", "qwer1234", "Nitin Sharma", 7417457165l, "nitin.sharma@wibmo.com");
+		UserDetails details = new UserDetails("nitin.sharma", "qwer1234", "Nitin Sharma", 7417457165l,
+				"nitin.sharma@wibmo.com", null);
 		String token = utils.generateAccessToken(details);
+		details.setJwt_token(token);
 
-		System.out.println(token);
-
-		System.out.println(utils.validateAccessToken("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3NDE3NDU3MTY1I25pdGluLnNoYXJtYUB3aWJtby5jb20jcXdlcjEyMzQiLCJpc3MiOiJOSVRJTkBUVVNIQVIiLCJpYXQiOjE2NjMxMDM0NDksImV4cCI6MTY2MzE4OTg0OX0.LDspav7SmouISI8Nw1ANeSH-X79NVYSlC8Oiz0L-Gg20NgUe6bWvZcxsPf2NSlQM6oTj4-zYKrURhOszgK7kWQ"));
-		System.out.println(utils.getSubject(token));
+//		System.out.println(utils.getSubject(token));
+//		
+		System.out.println("ISExpired? : " + utils.isExpired(token));
+		Thread.sleep(5000);
+		System.out.println("ISExpired? : " + utils.isExpired(token));
+//		
+//		
 
 	}
 }

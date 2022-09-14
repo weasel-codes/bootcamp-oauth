@@ -56,8 +56,8 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 		
 		UserDetails user = this.service.getUserByEmail(email);
 		lOGGER.info("Password from table in encoded form : " + user);
-		lOGGER.info("Password from JWT token : " + pass);
-		if(user==null || !encoder.matches(pass, user.getPassword())) return false;
+		lOGGER.info("Password from JWT token : " + pass+ "and password from getpass: "+user.getPassword() + " &&&&&&&& " + pass.equals(user.getPassword()));
+		if(user==null || !pass.equals(user.getPassword())) return false;
 		return true;
 	}
 
