@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -19,6 +20,7 @@ import com.wibmo.bootcamp.utils.JWTUtils;
 @Configuration
 public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 	
+	@Autowired private BCryptPasswordEncoder encoder;
 	@Autowired private JWTUtils jwtUtil;
 	@Autowired private UserDetailsService service;
 
@@ -34,12 +36,11 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 		System.out.println(token);
 		
 		String[] sub = jwtUtil.getSubject(token).split("#");
-		String phone = sub[0];
-		String email = sub[1];
-		String pass = sub[2];
+		String email = sub[0];
+		String pass = sub[1];
+//		String encodedPass = encoder.encode(pass);
 		
-		System.out.println(email + " : " + pass);
-		
+		lOGGER.info("Email and Pass from api token : " + email + " @ " + pass);
 		boolean user = validateUser(email, pass);
 		
 		if(user==false) {
@@ -54,7 +55,9 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 	private boolean validateUser(String email, String pass) throws AuthenticationException {
 		
 		UserDetails user = this.service.getUserByEmail(email);
-		if(user==null || !user.getPassword().equals(pass)) return false;
+		lOGGER.info("Password from table in encoded form : " + user);
+		lOGGER.info("Password from JWT token : " + pass);
+		if(user==null || !encoder.matches(pass, user.getPassword())) return false;
 		return true;
 	}
 

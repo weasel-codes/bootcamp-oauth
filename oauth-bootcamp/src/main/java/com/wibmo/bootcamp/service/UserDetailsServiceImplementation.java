@@ -52,13 +52,12 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 
 	@Override
 	public UserDetails getUserByEmail(String email) {
-//		UserDetails myUser = userDao.findByEmail(email);
-//		if (myUser != null) {
-//			return myUser;
-//		} else {
-//			throw new RuntimeException("User Not found");
-//		}
-		return new UserDetails("nitin.sharma", "qwer12345", "Nitin Sharma", 7417457165l, "nitin.sharma@wibmo.com");
+		UserDetails myUser = userDao.findByEmail(email);
+		if (myUser != null) {
+			return myUser;
+		} else {
+			throw new RuntimeException("User Not found");
+		}
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class JWTUtils {
 
 	public String generateAccessToken(UserDetails user) {
 
-		return Jwts.builder().setSubject(user.getPhone() + "#" + user.getEmail() + "#" + user.getPassword())
+		return Jwts.builder().setSubject(user.getEmail() + "#" + user.getPassword())
 				.setIssuer("NITIN@TUSHAR").setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();

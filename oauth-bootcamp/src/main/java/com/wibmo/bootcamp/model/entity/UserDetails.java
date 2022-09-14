@@ -11,13 +11,16 @@ public class UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int sid;
+
 	private String username;
 	private String password;
 	private String name;
-	private long phone;
-	private String email;
 
-	public UserDetails(int sid, String username, String password, String name, long phone, String email) {
+	private long phone;
+	private String email;	
+	private String jwt_token;
+
+	public UserDetails(int sid, String username, String password, String name, long phone, String email, String token) {
 		super();
 		this.sid = sid;
 		this.username = username;
@@ -25,15 +28,17 @@ public class UserDetails {
 		this.name = name;
 		this.phone = phone;
 		this.email = email;
+		this.jwt_token = token;
 	}
 
-	public UserDetails(String username, String password, String name, long phone, String email) {
+	public UserDetails(String username, String password, String name, long phone, String email, String token) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.phone = phone;
 		this.email = email;
+		this.jwt_token = token;
 	}
 
 	public String getEmail() {
@@ -88,4 +93,17 @@ public class UserDetails {
 		this.phone = phone;
 	}
 
+	public String getJwt_token() {
+		return jwt_token;
+	}
+
+	public void setJwt_token(String jwt_token) {
+		this.jwt_token = jwt_token;
+	}
+
+	@Override
+	public String toString() {
+		return "UserDetails [sid=" + sid + ", username=" + username + ", password=" + password + ", name=" + name
+				+ ", phone=" + phone + ", email=" + email + ", jwt_token=" + jwt_token + "]";
+	}
 }
