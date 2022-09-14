@@ -37,7 +37,6 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 	@Override
 	public void createuser(UserDetails user) {
 		userDao.save(user);
-
 	}
 
 	@Override

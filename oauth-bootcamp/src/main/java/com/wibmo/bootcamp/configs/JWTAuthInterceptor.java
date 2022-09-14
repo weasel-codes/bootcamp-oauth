@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -16,21 +16,20 @@ import com.wibmo.bootcamp.model.entity.UserDetails;
 import com.wibmo.bootcamp.service.UserDetailsService;
 import com.wibmo.bootcamp.utils.JWTUtils;
 
-@Component
+@Configuration
 public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 	
 	@Autowired private JWTUtils jwtUtil;
 	@Autowired private UserDetailsService service;
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
-
+	private static final Logger lOGGER = LoggerFactory.getLogger(JWTAuthInterceptor.class);
 	private static final String AUTH_HEADER_PARAMETER_AUTHERIZATION = "auth";
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		log.info("[Inside PRE Handle interceptor] : " + request.getRequestURL());
+		lOGGER.info("[Inside PRE Handle interceptor] : " + request.getRequestURL());
 		String token = request.getHeader(AUTH_HEADER_PARAMETER_AUTHERIZATION);
 		System.out.println(token);
 		
@@ -63,8 +62,7 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 
-		log.info("[Inside POST Handle Interceptor]" + request.getRequestURI());
-
+		lOGGER.info("[Inside POST Handle Interceptor]" + request.getRequestURI());
 	}
 
 }
