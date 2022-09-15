@@ -66,6 +66,10 @@ public class AuthController {
 		}
 		
 		UserDetails user = userService.getUserByEmail(req.getEmail());
+
+		if(!encoder.encode(req.getPassword()).equals(user.getPassword()))
+			return new ResponseEntity<String>("Incorrect Passoword", HttpStatus.UNAUTHORIZED);		
+
 		try {
 			jwtutils.isExpired(user.getJwt_token());
 		} catch (Exception e) {
