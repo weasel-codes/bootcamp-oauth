@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.wibmo.bootcamp.constant.Constants;
 import com.wibmo.bootcamp.model.entity.UserDetails;
 
 import io.jsonwebtoken.Claims;
@@ -20,17 +21,13 @@ import io.jsonwebtoken.UnsupportedJwtException;
 public class JWTUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JWTUtils.class);
-//	private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hour
-	private static final long EXPIRE_DURATION = 30 * 1000; //1 minute 
-
-	private static final String SECRET_KEY = "12345@abcde";
 
 	public String generateAccessToken(UserDetails user) {
 
 		LOGGER.info("Encrypting : " + user);
-		String token = Jwts.builder().setSubject(user.getEmail() + "#" + user.getPassword()).setIssuer("NITIN@TUSHAR")
-				.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
+		String token = Jwts.builder().setSubject(user.getEmail() + "#" + user.getPassword()).setIssuer(Constants.ISSUER)
+				.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + Constants.EXPIRE_DURATION))
+				.signWith(SignatureAlgorithm.HS512, Constants.SECRET_KEY).compact();
 
 //		System.out.println(Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject() 
 //				+ " : " + Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getIssuer() 
@@ -42,7 +39,7 @@ public class JWTUtils {
 	public boolean validateAccessToken(String token) throws ExpiredJwtException {
 
 		try {
-			Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+			Jwts.parser().setSigningKey(Constants.SECRET_KEY).parseClaimsJws(token);
 			return true;
 		} catch (ExpiredJwtException ex) {
 			LOGGER.error("JWT expired", ex.getMessage());
@@ -64,11 +61,11 @@ public class JWTUtils {
 	}
 
 	private Claims parseClaims(String token) throws ExpiredJwtException {
-		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(Constants.SECRET_KEY).parseClaimsJws(token).getBody();
 	}
 
 	public boolean isExpired(String token) throws ExpiredJwtException {
-		if (Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getExpiration().before(new Date()))
+		if (Jwts.parser().setSigningKey(Constants.SECRET_KEY).parseClaimsJws(token).getBody().getExpiration().before(new Date()))
 			return true;
 		else
 			return false;
@@ -76,7 +73,7 @@ public class JWTUtils {
 
 	public static void main(String[] args) throws InterruptedException {
 		JWTUtils utils = new JWTUtils();
-		System.out.println(SECRET_KEY);
+		System.out.println(Constants.SECRET_KEY);
 
 		UserDetails details = new UserDetails("nitin.sharma", "qwer1234", "Nitin Sharma", 7417457165l,
 				"nitin.sharma@wibmo.com", null);

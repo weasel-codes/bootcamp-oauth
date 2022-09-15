@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.wibmo.bootcamp.constant.APIConstants;
 import com.wibmo.bootcamp.model.entity.UserDetails;
 import com.wibmo.bootcamp.service.UserDetailsService;
 import com.wibmo.bootcamp.utils.JWTUtils;
@@ -22,20 +23,17 @@ import io.jsonwebtoken.ExpiredJwtException;
 public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 
 //	@Autowired private BCryptPasswordEncoder encoder;
-	@Autowired
-	private JWTUtils jwtUtil;
-	@Autowired
-	private UserDetailsService service;
+	@Autowired	private JWTUtils jwtUtil;
+	@Autowired	private UserDetailsService service;
 
 	private static final Logger lOGGER = LoggerFactory.getLogger(JWTAuthInterceptor.class);
-	private static final String AUTH_HEADER_PARAMETER_AUTHERIZATION = "auth";
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
 		lOGGER.info("[Inside PRE Handle interceptor] : " + request.getRequestURL());
-		String token = request.getHeader(AUTH_HEADER_PARAMETER_AUTHERIZATION);
+		String token = request.getHeader(APIConstants.AUTH_HEADER_PARAMETER_AUTHERIZATION);
 		System.out.println(token);
 
 		try {

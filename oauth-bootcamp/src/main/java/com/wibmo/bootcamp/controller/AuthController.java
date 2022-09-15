@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wibmo.bootcamp.constant.APIEndPoint;
+import com.wibmo.bootcamp.constant.APIConstants;
 import com.wibmo.bootcamp.model.entity.UserDetails;
 import com.wibmo.bootcamp.model.req.SignInReq;
 import com.wibmo.bootcamp.model.req.SignUpReq;
@@ -33,7 +33,7 @@ public class AuthController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
-	@RequestMapping(path = APIEndPoint.SIGNUP, method = RequestMethod.POST, consumes = "application/json")
+	@RequestMapping(path = APIConstants.SIGNUP, method = RequestMethod.POST, consumes = "application/json")
 	public ResponseEntity<SignUpRes> signUp(@RequestBody SignUpReq req) {
 
 		LOGGER.info("signUp() : " + req);
@@ -62,7 +62,7 @@ public class AuthController {
 		return new ResponseEntity<SignUpRes>(res, HttpStatus.OK);
 	}
 
-	@RequestMapping(path = APIEndPoint.LOGIN, method = RequestMethod.POST)
+	@RequestMapping(path = APIConstants.LOGIN, method = RequestMethod.POST)
 	public ResponseEntity<String> signIn(@RequestBody SignInReq req) {
 
 		if (validateSignInReq(req) == false) {
