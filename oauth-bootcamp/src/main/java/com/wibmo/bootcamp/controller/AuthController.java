@@ -22,9 +22,14 @@ import com.wibmo.bootcamp.utils.JWTUtils;
 @RestController
 public class AuthController {
 
-	@Autowired BCryptPasswordEncoder encoder;
-	@Autowired UserDetailsServiceImplementation userService;
-	@Autowired JWTUtils jwtutils;
+	@Autowired
+	BCryptPasswordEncoder encoder;
+	
+	@Autowired
+	UserDetailsServiceImplementation userService;
+	
+	@Autowired
+	JWTUtils jwtutils;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
@@ -56,19 +61,23 @@ public class AuthController {
 
 		return new ResponseEntity<SignUpRes>(res, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(path = APIEndPoint.LOGIN, method = RequestMethod.POST)
 	public ResponseEntity<String> signIn(@RequestBody SignInReq req) {
 
-		if(validateSignInReq(req) == false) {
+		if (validateSignInReq(req) == false) {
 			LOGGER.error("Incorrect Request : " + req);
 			return new ResponseEntity<String>("", HttpStatus.BAD_REQUEST);
 		}
-		
+
 		UserDetails user = userService.getUserByEmail(req.getEmail());
 
-		if(!encoder.encode(req.getPassword()).equals(user.getPassword()))
-			return new ResponseEntity<String>("Incorrect Passoword", HttpStatus.UNAUTHORIZED);		
+		if (!encoder.matches(req.getPassword(), user.getPassword())) {
+			LOGGER.info(encoder.encode(req.getPassword()));
+			LOGGER.info(user.getPassword());
+			LOGGER.info("" + encoder.matches(req.getPassword(), user.getPassword()));
+			return new ResponseEntity<String>("Incorrect Passoword", HttpStatus.UNAUTHORIZED);
+		}
 
 		try {
 			jwtutils.isExpired(user.getJwt_token());
@@ -79,23 +88,25 @@ public class AuthController {
 			user.setJwt_token(token);
 			userService.updateUser(user);
 		}
-	
+
 		return new ResponseEntity<String>(user.getJwt_token(), HttpStatus.OK);
-	}	
+	}
 
 	private boolean validateSignupReq(SignUpReq req) {
-		if (req==null || req.getEmail() == null || req.getPhone() == 0 || req.getPassword() == null || req.getUsername() == null)
+		if (req == null || req.getEmail() == null || req.getPhone() == 0 || req.getPassword() == null
+				|| req.getUsername() == null)
 			return false;
 		return true;
 	}
 
 	private boolean validateSignInReq(SignInReq req) {
-		if (req==null || req.getEmail() == null || req.getPassword() == null)
+		if (req == null || req.getEmail() == null || req.getPassword() == null)
 			return false;
 		return true;
 	}
 
 	private UserDetails generateUserFromRequest(SignUpReq req) {
-		return new UserDetails(req.getUsername(), encoder.encode(req.getPassword()), req.getName(), req.getPhone(), req.getEmail(), null);
+		return new UserDetails(req.getUsername(), encoder.encode(req.getPassword()), req.getName(), req.getPhone(),
+				req.getEmail(), null);
 	}
 }

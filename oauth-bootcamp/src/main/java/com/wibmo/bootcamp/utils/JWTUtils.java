@@ -20,13 +20,14 @@ import io.jsonwebtoken.UnsupportedJwtException;
 public class JWTUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JWTUtils.class);
-	private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hour
-//	private static final long EXPIRE_DURATION = 1 * 1000; // 24 hour
+//	private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hour
+	private static final long EXPIRE_DURATION = 30 * 1000; //1 minute 
 
 	private static final String SECRET_KEY = "12345@abcde";
 
 	public String generateAccessToken(UserDetails user) {
 
+		LOGGER.info("Encrypting : " + user);
 		String token = Jwts.builder().setSubject(user.getEmail() + "#" + user.getPassword()).setIssuer("NITIN@TUSHAR")
 				.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
@@ -38,7 +39,7 @@ public class JWTUtils {
 		return token;
 	}
 
-	public boolean validateAccessToken(String token) {
+	public boolean validateAccessToken(String token) throws ExpiredJwtException {
 
 		try {
 			Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
@@ -58,15 +59,15 @@ public class JWTUtils {
 		return false;
 	}
 
-	public String getSubject(String token) {
+	public String getSubject(String token) throws ExpiredJwtException {
 		return parseClaims(token).getSubject();
 	}
 
-	private Claims parseClaims(String token) {
+	private Claims parseClaims(String token) throws ExpiredJwtException {
 		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 	}
 
-	public boolean isExpired(String token) {
+	public boolean isExpired(String token) throws ExpiredJwtException {
 		if (Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getExpiration().before(new Date()))
 			return true;
 		else
@@ -82,13 +83,8 @@ public class JWTUtils {
 		String token = utils.generateAccessToken(details);
 		details.setJwt_token(token);
 
-//		System.out.println(utils.getSubject(token));
-//		
 		System.out.println("ISExpired? : " + utils.isExpired(token));
 		Thread.sleep(5000);
 		System.out.println("ISExpired? : " + utils.isExpired(token));
-//		
-//		
-
 	}
 }
