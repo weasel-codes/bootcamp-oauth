@@ -65,6 +65,8 @@ public class AuthController {
 	@RequestMapping(path = APIConstants.LOGIN, method = RequestMethod.POST)
 	public ResponseEntity<String> signIn(@RequestBody SignInReq req) {
 
+		LOGGER.info("signIn() : " + req);
+		
 		if (validateSignInReq(req) == false) {
 			LOGGER.error("Incorrect Request : " + req);
 			return new ResponseEntity<String>("", HttpStatus.BAD_REQUEST);

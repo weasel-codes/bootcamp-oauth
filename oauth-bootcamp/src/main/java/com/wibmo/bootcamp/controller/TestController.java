@@ -20,5 +20,4 @@ public class TestController {
 		System.out.println("[TestController] : testUser()");
 		return "\"resp\" : \"Hello World\"";
 	}
-
 }

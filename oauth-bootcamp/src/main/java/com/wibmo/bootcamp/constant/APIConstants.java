@@ -7,6 +7,8 @@ public class APIConstants {
 	public static final String SIGNUP = "/auth/signup";
 	public static final String LOGIN = "/auth/login";
 	
+	public static final String USER_DETAILS_FETCH = "/user/details";
+	
 	public static final String TEST_AUTH = "/auth/testserver";
 	public static final String USER_AUTH = "/user/testserver";
 }
