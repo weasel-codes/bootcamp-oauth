@@ -141,8 +141,9 @@ public class AuthController {
 			return new ResponseEntity<SignInResp>(HttpStatus.UNAUTHORIZED);
 		}
 
-		Timestamp expected = new Timestamp(user.getOtpTime().getTime() + Constants.EXPIRE_DURATION*60*1000);
-		if(expected.after(new Timestamp(new Date().getTime()))) {
+		Timestamp expected = new Timestamp(user.getOtpTime().getTime() + 2*60*1000);
+		LOGGER.info(expected + " >>>> " + new Timestamp(new Date().getTime()));
+		if(expected.before(new Timestamp(new Date().getTime()))) {
 			LOGGER.error("EXPIRED OTP : " + req);
 			return new ResponseEntity<SignInResp>(HttpStatus.UNAUTHORIZED);
 		}
