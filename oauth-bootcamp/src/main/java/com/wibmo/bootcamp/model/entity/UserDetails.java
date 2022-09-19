@@ -130,4 +130,12 @@ public class UserDetails {
 		super();
 	}
 
+	@Override
+	public String toString() {
+		return "UserDetails [sid=" + sid + ", username=" + username + ", password=" + password + ", name=" + name
+				+ ", phone=" + phone + ", email=" + email + ", jwt_token=" + jwt_token + ", otp=" + otp + ", otpTime="
+				+ otpTime + "]";
+	}
+
+	
 }

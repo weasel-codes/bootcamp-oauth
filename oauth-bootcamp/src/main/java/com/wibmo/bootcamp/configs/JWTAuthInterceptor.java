@@ -46,6 +46,7 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 			boolean user = validateUser(email, pass);
 
 			if (user == false) {
+				lOGGER.error("Validate User ? " + user);
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
 				return false;
 			}
@@ -64,8 +65,8 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 		UserDetails user = this.service.getUserByEmail(email);
 		lOGGER.info("Password from table in encoded form : " + user);
 		lOGGER.info("Password from JWT token : " + pass + "and password from getpass: " + user.getPassword()
-				+ " &&&&&&&& " + pass.equals(user.getPassword()));
-		if (user == null || encoder.matches(pass, user.getPassword()))
+				+ " &&&&&&&& " + encoder.matches(pass, user.getPassword()));
+		if (user == null || !encoder.matches(pass, user.getPassword()))
 			return false;
 		return true;
 	}

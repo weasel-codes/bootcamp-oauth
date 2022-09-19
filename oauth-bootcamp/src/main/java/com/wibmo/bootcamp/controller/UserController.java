@@ -32,8 +32,10 @@ public class UserController {
 		
 		try {
 			UserDetails user = userService.getUserByEmail(email);
+			LOGGER.info(user.toString());
 			return new ResponseEntity<UserDetailsRes>(this.generateResFromUser(user), HttpStatus.ACCEPTED);		
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			return new ResponseEntity<UserDetailsRes>(HttpStatus.BAD_REQUEST);
 		}
 	}
