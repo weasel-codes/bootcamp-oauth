@@ -1,7 +1,6 @@
 package com.wibmo.bootcamp.controller;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -21,6 +20,7 @@ import com.wibmo.bootcamp.constant.Constants;
 import com.wibmo.bootcamp.model.entity.UserDetails;
 import com.wibmo.bootcamp.model.req.SignInReq;
 import com.wibmo.bootcamp.model.req.SignUpReq;
+import com.wibmo.bootcamp.model.resp.SignInResp;
 import com.wibmo.bootcamp.model.resp.SignUpRes;
 import com.wibmo.bootcamp.service.UserDetailsServiceImplementation;
 import com.wibmo.bootcamp.utils.JWTUtils;
@@ -69,13 +69,13 @@ public class AuthController {
 	}
 
 	@RequestMapping(path = APIConstants.LOGIN_USER_PASS, method = RequestMethod.POST)
-	public ResponseEntity<String> signIn(@RequestBody SignInReq req) {
+	public ResponseEntity<SignInResp> signIn(@RequestBody SignInReq req) {
 
 		LOGGER.info("signIn() : " + req);
 
 		if (validateSignInReq(req) == false) {
 			LOGGER.error("Incorrect Request : " + req);
-			return new ResponseEntity<String>("", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<SignInResp>(HttpStatus.BAD_REQUEST);
 		}
 
 		UserDetails user = userService.getUserByEmail(req.getEmail());
@@ -84,7 +84,7 @@ public class AuthController {
 			LOGGER.info(encoder.encode(req.getPassword()));
 			LOGGER.info(user.getPassword());
 			LOGGER.info("" + encoder.matches(req.getPassword(), user.getPassword()));
-			return new ResponseEntity<String>("Incorrect Passoword", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<SignInResp>(HttpStatus.UNAUTHORIZED);
 		}
 
 		try {
@@ -96,8 +96,14 @@ public class AuthController {
 			user.setJwt_token(token);
 			userService.updateUser(user);
 		}
+		
+		SignInResp resp = new SignInResp();
+		resp.setEmail(user.getEmail());
+		resp.setName(user.getName());
+		resp.setPhone(user.getPhone());
+		resp.setToken(user.getJwt_token());
 
-		return new ResponseEntity<String>(user.getJwt_token(), HttpStatus.OK);
+		return new ResponseEntity<SignInResp>(resp, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = APIConstants.LOGIN_OTP_GENERATE, method = RequestMethod.GET)
@@ -118,33 +124,32 @@ public class AuthController {
 		return new ResponseEntity<String>(otp, HttpStatus.OK);
 	}
 	
-	
 	@RequestMapping(path = APIConstants.LOGIN_OTP_VERIFY, method = RequestMethod.POST)
-	public ResponseEntity<String> signInOTP(@RequestBody SignInReq req) {
+	public ResponseEntity<SignInResp> signInOTP(@RequestBody SignInReq req) {
 
 		LOGGER.info("signInOTP() : " + req);
 
 		if (validateSignInReq(req) == false) {
 			LOGGER.error("Incorrect Request : " + req);
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<SignInResp>(HttpStatus.BAD_REQUEST);
 		}
 
 		UserDetails user = userService.getUserByEmail(req.getEmail());
 		
 		if(!user.getOtp().equals(req.getOtp())) {
 			LOGGER.error("Incorrect OTP : " + req);
-			return new ResponseEntity<String>("INCORRECT OTP", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<SignInResp>(HttpStatus.UNAUTHORIZED);
 		}
 
 		Timestamp expected = new Timestamp(user.getOtpTime().getTime() + Constants.EXPIRE_DURATION*60*1000);
 		if(expected.after(new Timestamp(new Date().getTime()))) {
 			LOGGER.error("EXPIRED OTP : " + req);
-			return new ResponseEntity<String>("EXPIRED OTP", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<SignInResp>(HttpStatus.UNAUTHORIZED);
 		}
 		
 		if(!user.getOtp().equals(req.getOtp())) {
 			LOGGER.error("Incorrect OTP : " + req);
-			return new ResponseEntity<String>("INCORRECT OTP", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<SignInResp>(HttpStatus.UNAUTHORIZED);
 		}
 		
 		try {
@@ -156,8 +161,14 @@ public class AuthController {
 			user.setJwt_token(token);
 			userService.updateUser(user);
 		}
+		
+		SignInResp resp = new SignInResp();
+		resp.setEmail(user.getEmail());
+		resp.setName(user.getName());
+		resp.setPhone(user.getPhone());
+		resp.setToken(user.getJwt_token());
 
-		return new ResponseEntity<String>(user.getJwt_token(), HttpStatus.OK);
+		return new ResponseEntity<SignInResp>(resp, HttpStatus.OK);
 	}
 
 	private boolean validateSignupReq(SignUpReq req) {
