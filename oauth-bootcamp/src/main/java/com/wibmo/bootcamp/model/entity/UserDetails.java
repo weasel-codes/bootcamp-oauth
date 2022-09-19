@@ -1,9 +1,13 @@
 package com.wibmo.bootcamp.model.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity(name = "USER_DETAILS")
 public class UserDetails {
@@ -15,43 +19,13 @@ public class UserDetails {
 	private String username;
 	private String password;
 	private String name;
-
 	private long phone;
-	private String email;	
+	private String email;
 	private String jwt_token;
-
-	public UserDetails(int sid, String username, String password, String name, long phone, String email, String token) {
-		super();
-		this.sid = sid;
-		this.username = username;
-		this.password = password;
-		this.name = name;
-		this.phone = phone;
-		this.email = email;
-		this.jwt_token = token;
-	}
-
-	public UserDetails(String username, String password, String name, long phone, String email, String token) {
-		super();
-		this.username = username;
-		this.password = password;
-		this.name = name;
-		this.phone = phone;
-		this.email = email;
-		this.jwt_token = token;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public UserDetails() {
-		super();
-	}
+	private String otp;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Timestamp otpTime;
 
 	public int getSid() {
 		return sid;
@@ -93,6 +67,14 @@ public class UserDetails {
 		this.phone = phone;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getJwt_token() {
 		return jwt_token;
 	}
@@ -101,9 +83,51 @@ public class UserDetails {
 		this.jwt_token = jwt_token;
 	}
 
-	@Override
-	public String toString() {
-		return "UserDetails [sid=" + sid + ", username=" + username + ", password=" + password + ", name=" + name
-				+ ", phone=" + phone + ", email=" + email + ", jwt_token=" + jwt_token + "]";
+	public String getOtp() {
+		return otp;
 	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	public Timestamp getOtpTime() {
+		return otpTime;
+	}
+
+	public void setOtpTime(Timestamp otpTime) {
+		this.otpTime = otpTime;
+	}
+
+	public UserDetails(String username, String password, String name, long phone, String email,
+			String jwt_token, String otp, Timestamp otpTime) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.name = name;
+		this.phone = phone;
+		this.email = email;
+		this.jwt_token = jwt_token;
+		this.otp = otp;
+		this.otpTime = otpTime;
+	}
+
+	
+	public UserDetails(String username, String password, String name, long phone, String email,
+			String jwt_token) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.name = name;
+		this.phone = phone;
+		this.email = email;
+		this.jwt_token = jwt_token;
+//		this.otp = otp;
+//		this.otpTime = otpTime;
+	}
+
+	public UserDetails() {
+		super();
+	}
+
 }

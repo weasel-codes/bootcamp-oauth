@@ -1,5 +1,9 @@
 package com.wibmo.bootcamp.controller;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,27 +13,28 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wibmo.bootcamp.constant.APIConstants;
+import com.wibmo.bootcamp.constant.Constants;
 import com.wibmo.bootcamp.model.entity.UserDetails;
 import com.wibmo.bootcamp.model.req.SignInReq;
 import com.wibmo.bootcamp.model.req.SignUpReq;
 import com.wibmo.bootcamp.model.resp.SignUpRes;
 import com.wibmo.bootcamp.service.UserDetailsServiceImplementation;
 import com.wibmo.bootcamp.utils.JWTUtils;
+import com.wibmo.bootcamp.utils.OTPHandler;
 
 @RestController
 public class AuthController {
 
 	@Autowired
-	BCryptPasswordEncoder encoder;
-	
+	private JWTUtils jwtutils;
 	@Autowired
-	UserDetailsServiceImplementation userService;
-	
+	private BCryptPasswordEncoder encoder;
 	@Autowired
-	JWTUtils jwtutils;
+	private UserDetailsServiceImplementation userService;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
@@ -63,11 +68,11 @@ public class AuthController {
 		return new ResponseEntity<SignUpRes>(res, HttpStatus.OK);
 	}
 
-	@RequestMapping(path = APIConstants.LOGIN, method = RequestMethod.POST)
+	@RequestMapping(path = APIConstants.LOGIN_USER_PASS, method = RequestMethod.POST)
 	public ResponseEntity<String> signIn(@RequestBody SignInReq req) {
 
 		LOGGER.info("signIn() : " + req);
-		
+
 		if (validateSignInReq(req) == false) {
 			LOGGER.error("Incorrect Request : " + req);
 			return new ResponseEntity<String>("", HttpStatus.BAD_REQUEST);
@@ -95,6 +100,66 @@ public class AuthController {
 		return new ResponseEntity<String>(user.getJwt_token(), HttpStatus.OK);
 	}
 
+	@RequestMapping(path = APIConstants.LOGIN_OTP_GENERATE, method = RequestMethod.GET)
+	public ResponseEntity<String> generateOTP(@RequestParam String email) {
+
+		if (email==null || email.isBlank() || email.isEmpty()) {
+			LOGGER.error("Incorrect Request: EMAIL NULL : " + email);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+
+		UserDetails user = userService.getUserByEmail(email);
+		String otp = OTPHandler.generateOTP(Constants.LOGIN_OTP_LENGTH);
+		LOGGER.info("Generated otp : " + otp);
+		user.setOtp(otp);
+		user.setOtpTime(new Timestamp(new Date().getTime()));
+		userService.updateUser(user);
+
+		return new ResponseEntity<String>(otp, HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(path = APIConstants.LOGIN_OTP_VERIFY, method = RequestMethod.POST)
+	public ResponseEntity<String> signInOTP(@RequestBody SignInReq req) {
+
+		LOGGER.info("signInOTP() : " + req);
+
+		if (validateSignInReq(req) == false) {
+			LOGGER.error("Incorrect Request : " + req);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+
+		UserDetails user = userService.getUserByEmail(req.getEmail());
+		
+		if(!user.getOtp().equals(req.getOtp())) {
+			LOGGER.error("Incorrect OTP : " + req);
+			return new ResponseEntity<String>("INCORRECT OTP", HttpStatus.UNAUTHORIZED);
+		}
+
+		Timestamp expected = new Timestamp(user.getOtpTime().getTime() + Constants.EXPIRE_DURATION*60*1000);
+		if(expected.after(new Timestamp(new Date().getTime()))) {
+			LOGGER.error("EXPIRED OTP : " + req);
+			return new ResponseEntity<String>("EXPIRED OTP", HttpStatus.UNAUTHORIZED);
+		}
+		
+		if(!user.getOtp().equals(req.getOtp())) {
+			LOGGER.error("Incorrect OTP : " + req);
+			return new ResponseEntity<String>("INCORRECT OTP", HttpStatus.UNAUTHORIZED);
+		}
+		
+		try {
+			jwtutils.isExpired(user.getJwt_token());
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			LOGGER.info("Generating Token...");
+			String token = jwtutils.generateAccessToken(user);
+			user.setJwt_token(token);
+			userService.updateUser(user);
+		}
+
+		return new ResponseEntity<String>(user.getJwt_token(), HttpStatus.OK);
+	}
+
 	private boolean validateSignupReq(SignUpReq req) {
 		if (req == null || req.getEmail() == null || req.getPhone() == 0 || req.getPassword() == null
 				|| req.getUsername() == null)
@@ -103,13 +168,22 @@ public class AuthController {
 	}
 
 	private boolean validateSignInReq(SignInReq req) {
-		if (req == null || req.getEmail() == null || req.getPassword() == null)
+		if (req == null || req.getMethod().isBlank() || req.getMethod().isEmpty())
 			return false;
+
+		if (req.getMethod().equals(Constants.LOGIN_PASS)
+				&& (req.getEmail() == null || req.getEmail().isBlank() || req.getEmail().isEmpty()
+				|| req.getPassword() == null || req.getPassword().isBlank() || req.getPassword().isEmpty()))
+			return false;
+		
+		else if(req.getMethod() == Constants.LOGIN_OTP && (req.getEmail() == null || req.getEmail().isBlank() || req.getEmail().isEmpty() || req.getOtp().length()<Constants.LOGIN_OTP_LENGTH))
+			return false;
+		
 		return true;
 	}
 
 	private UserDetails generateUserFromRequest(SignUpReq req) {
-		return new UserDetails(req.getUsername(), req.getPassword(), req.getName(), req.getPhone(),
-				req.getEmail(), null);
+		return new UserDetails(req.getUsername(), req.getPassword(), req.getName(), req.getPhone(), req.getEmail(),
+				null);
 	}
 }

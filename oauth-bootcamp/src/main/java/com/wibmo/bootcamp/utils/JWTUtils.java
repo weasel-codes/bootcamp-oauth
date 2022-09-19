@@ -71,17 +71,21 @@ public class JWTUtils {
 			return false;
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		JWTUtils utils = new JWTUtils();
-		System.out.println(Constants.SECRET_KEY);
-
-		UserDetails details = new UserDetails("nitin.sharma", "qwer1234", "Nitin Sharma", 7417457165l,
-				"nitin.sharma@wibmo.com", null);
-		String token = utils.generateAccessToken(details);
-		details.setJwt_token(token);
-
-		System.out.println("ISExpired? : " + utils.isExpired(token));
-		Thread.sleep(5000);
-		System.out.println("ISExpired? : " + utils.isExpired(token));
-	}
+//	public static void main(String[] args) throws InterruptedException {
+//		JWTUtils utils = new JWTUtils();
+//		System.out.println(Constants.SECRET_KEY);
+//
+//		UserDetails details = new UserDetails("nitin.sharma", 
+//				"qwer1234", 
+//				"Nitin Sharma", 
+//				7417457165l,
+//				"nitin.sharma@wibmo.com", 
+//				null);
+//		String token = utils.generateAccessToken(details);
+//		details.setJwt_token(token);
+//
+//		System.out.println("ISExpired? : " + utils.isExpired(token));
+//		Thread.sleep(5000);
+//		System.out.println("ISExpired? : " + utils.isExpired(token));
+//	}
 }

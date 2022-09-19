@@ -18,7 +18,7 @@ import com.wibmo.bootcamp.service.UserDetailsServiceImplementation;
 @RestController
 public class UserController {
 
-	@Autowired UserDetailsServiceImplementation userService;
+	@Autowired private UserDetailsServiceImplementation userService;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
