@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -22,7 +23,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 @Configuration
 public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 
-//	@Autowired private BCryptPasswordEncoder encoder;
+	@Autowired private BCryptPasswordEncoder encoder;
 	@Autowired	private JWTUtils jwtUtil;
 	@Autowired	private UserDetailsService service;
 
@@ -64,7 +65,7 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 		lOGGER.info("Password from table in encoded form : " + user);
 		lOGGER.info("Password from JWT token : " + pass + "and password from getpass: " + user.getPassword()
 				+ " &&&&&&&& " + pass.equals(user.getPassword()));
-		if (user == null || !pass.equals(user.getPassword()))
+		if (user == null || encoder.matches(pass, user.getPassword()))
 			return false;
 		return true;
 	}

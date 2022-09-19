@@ -30,8 +30,12 @@ public class UserController {
 		if(email.isBlank() || email.isEmpty())
 			new ResponseEntity<UserDetailsRes>(HttpStatus.BAD_REQUEST);
 		
-		UserDetails user = userService.getUserByEmail(email);
-		return new ResponseEntity<UserDetailsRes>(this.generateResFromUser(user), HttpStatus.ACCEPTED);		
+		try {
+			UserDetails user = userService.getUserByEmail(email);
+			return new ResponseEntity<UserDetailsRes>(this.generateResFromUser(user), HttpStatus.ACCEPTED);		
+		} catch (Exception e) {
+			return new ResponseEntity<UserDetailsRes>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	private UserDetailsRes generateResFromUser(UserDetails user) {

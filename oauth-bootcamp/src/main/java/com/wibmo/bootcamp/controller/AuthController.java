@@ -46,6 +46,7 @@ public class AuthController {
 
 		UserDetails user = generateUserFromRequest(req);
 		String token = jwtutils.generateAccessToken(user);
+		user.setPassword(encoder.encode(user.getPassword()));
 		user.setJwt_token(token);
 
 		LOGGER.info("User to be persisted : " + user);
@@ -54,7 +55,7 @@ public class AuthController {
 		LOGGER.info("Request verified : " + req);
 		res.setEmail(req.getEmail());
 		res.setName(req.getName());
-		res.setPassword(req.getPassword());
+//		res.setPassword(req.getPassword());
 		res.setPhone(req.getPhone());
 		res.setUsername(req.getUsername());
 		res.setToken(user.getJwt_token());
@@ -108,7 +109,7 @@ public class AuthController {
 	}
 
 	private UserDetails generateUserFromRequest(SignUpReq req) {
-		return new UserDetails(req.getUsername(), encoder.encode(req.getPassword()), req.getName(), req.getPhone(),
+		return new UserDetails(req.getUsername(), req.getPassword(), req.getName(), req.getPhone(),
 				req.getEmail(), null);
 	}
 }
