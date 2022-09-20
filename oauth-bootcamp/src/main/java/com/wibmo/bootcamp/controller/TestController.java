@@ -1,5 +1,6 @@
 package com.wibmo.bootcamp.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wibmo.bootcamp.constant.APIConstants;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:8090")
 public class TestController {
 
 	@RequestMapping(path = APIConstants.TEST_AUTH, method = RequestMethod.GET)
