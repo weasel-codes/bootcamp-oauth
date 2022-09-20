@@ -28,7 +28,7 @@ import com.wibmo.bootcamp.utils.JWTUtils;
 import com.wibmo.bootcamp.utils.OTPHandler;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8090")
+//@CrossOrigin(origins = "http://localhost:8090")
 public class AuthController {
 
 	@Autowired

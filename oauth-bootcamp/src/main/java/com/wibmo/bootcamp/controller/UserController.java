@@ -17,7 +17,7 @@ import com.wibmo.bootcamp.model.resp.UserDetailsRes;
 import com.wibmo.bootcamp.service.UserDetailsServiceImplementation;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8090")
+//@CrossOrigin(origins = "http://localhost:8090")
 public class UserController {
 
 	@Autowired private UserDetailsServiceImplementation userService;

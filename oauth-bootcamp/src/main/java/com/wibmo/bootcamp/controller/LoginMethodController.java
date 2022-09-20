@@ -18,7 +18,7 @@ import com.wibmo.bootcamp.model.resp.LoginMethodRes;
 import com.wibmo.bootcamp.service.LoginMethodServiceImpl;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8090")
+//@CrossOrigin(origins = "http://localhost:8090")
 public class LoginMethodController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginMethodController.class);

@@ -11,9 +11,11 @@ public class JWTConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired 
   JWTAuthInterceptor intercept;
+  @Autowired CORSInterceptor config;
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(config).addPathPatterns("/**");
     registry.addInterceptor(intercept).addPathPatterns("/**").excludePathPatterns("/auth/**");
   }
 }
