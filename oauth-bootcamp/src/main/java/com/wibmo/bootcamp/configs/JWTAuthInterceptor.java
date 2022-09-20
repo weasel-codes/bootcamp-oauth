@@ -76,6 +76,6 @@ public class JWTAuthInterceptor extends HandlerInterceptorAdapter {
 			ModelAndView modelAndView) throws Exception {
 
 		lOGGER.info("[Inside POST Handle Interceptor]" + request.getRequestURI());
+		response.addHeader("Access-Control-Allow-Origin", "*");
 	}
-
 }
